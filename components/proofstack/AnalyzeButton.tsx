@@ -5,16 +5,28 @@ import { useState } from "react";
 interface AnalyzeButtonProps {
   hasEvidence: boolean;
   hasCriteria: boolean;
+  isLoading?: boolean;
+  onAnalyze?: () => void;
 }
 
-export default function AnalyzeButton({ hasEvidence, hasCriteria }: AnalyzeButtonProps) {
+export default function AnalyzeButton({
+  hasEvidence,
+  hasCriteria,
+  isLoading = false,
+  onAnalyze,
+}: AnalyzeButtonProps) {
   const [showMessage, setShowMessage] = useState(false);
 
   const isReady = hasEvidence && hasCriteria;
 
   const handleClick = () => {
-    setShowMessage(true);
-    setTimeout(() => setShowMessage(false), 4000);
+    if (isLoading) return;
+    if (onAnalyze) {
+      onAnalyze();
+    } else {
+      setShowMessage(true);
+      setTimeout(() => setShowMessage(false), 4000);
+    }
   };
 
   return (
@@ -36,9 +48,12 @@ export default function AnalyzeButton({ hasEvidence, hasCriteria }: AnalyzeButto
           id="analyze-evidence-button"
           type="button"
           onClick={handleClick}
-          disabled={false} /* Phase 1: always enabled for demo */
+          disabled={!isReady || isLoading}
           aria-label="Analyze evidence with Gemma"
-          style={styles.button}
+          style={{
+            ...styles.button,
+            ...((!isReady || isLoading) ? styles.buttonDisabled : {}),
+          }}
         >
           <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true">
             <circle cx="9" cy="9" r="7.5" stroke="currentColor" strokeWidth="1.3" opacity="0.4" />

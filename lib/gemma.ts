@@ -1,4 +1,4 @@
-import { GoogleGenAI, createUserContent, createPartFromUri } from "@google/genai";
+import { GoogleGenAI, createUserContent, createPartFromUri, FileState } from "@google/genai";
 import type { Criterion } from "@/types/evaluation";
 import { EvaluationResultSchema } from "@/lib/evaluation-schema";
 
@@ -96,22 +96,54 @@ export async function runGemmaEvaluation(
 
   for (const f of files) {
     if (f.mimeType.startsWith("video/")) {
-      try {
-        const buffer = Buffer.from(f.base64Data, "base64");
-        const blob = new Blob([buffer], { type: f.mimeType });
-        const uploadResult = await ai.files.upload({
-          file: blob,
-          config: { mimeType: f.mimeType, displayName: f.name },
-        });
-        if (uploadResult.uri && uploadResult.mimeType) {
-          uploadedUris.push({
-            uri: uploadResult.uri,
-            mimeType: uploadResult.mimeType,
-            name: f.name,
-          });
+      const buffer = Buffer.from(f.base64Data, "base64");
+      const blob = new Blob([buffer], { type: f.mimeType });
+      let uploadedFile = await ai.files.upload({
+        file: blob,
+        config: { mimeType: f.mimeType, displayName: f.name },
+      });
+
+      console.log(`[Files API] ${f.name} uploaded, initial state: ${uploadedFile.state}`);
+
+      const timeoutMs = 30000;
+      const intervalMs = 1000;
+      const startTime = Date.now();
+
+      while (uploadedFile.state !== FileState.ACTIVE) {
+        if (uploadedFile.state === FileState.FAILED) {
+          throw new Error(
+            `Google Files API failed to process evidence file "${f.name}": ${uploadedFile.error?.message ?? "Processing failed"}`
+          );
         }
-      } catch (err) {
-        console.warn(`Video upload failed for ${f.name}, skipping:`, err);
+
+        if (Date.now() - startTime > timeoutMs) {
+          throw new Error(
+            `Timeout (30s) waiting for evidence file "${f.name}" to become ACTIVE (last state: ${uploadedFile.state})`
+          );
+        }
+
+        await new Promise((resolve) => setTimeout(resolve, intervalMs));
+
+        if (!uploadedFile.name) {
+          throw new Error(
+            `Uploaded file "${f.name}" did not return a valid resource name for polling.`
+          );
+        }
+
+        uploadedFile = await ai.files.get({
+          name: uploadedFile.name,
+        });
+        console.log(`[Files API] Polling ${f.name}: state is ${uploadedFile.state}`);
+      }
+
+      console.log(`[Files API] ${f.name} final state: ${uploadedFile.state}`);
+
+      if (uploadedFile.uri && uploadedFile.mimeType) {
+        uploadedUris.push({
+          uri: uploadedFile.uri,
+          mimeType: uploadedFile.mimeType,
+          name: f.name,
+        });
       }
     } else {
       inlineParts.push({

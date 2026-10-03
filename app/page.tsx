@@ -27,8 +27,11 @@ export default function Home() {
   const [claim, setClaim] = useState("");
   const [result, setResult] = useState<EvaluationResult | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleAnalyze = async () => {
+    if (isSubmitting) return;
+
     // Validate
     if (criteria.length === 0) {
       setError("Please add at least one criterion to the rubric.");
@@ -39,6 +42,7 @@ export default function Home() {
       return;
     }
 
+    setIsSubmitting(true);
     setError(null);
     setPhase("loading");
 
@@ -67,6 +71,8 @@ export default function Home() {
       const message = err instanceof Error ? err.message : "An unknown error occurred.";
       setError(message);
       setPhase("error");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -74,6 +80,7 @@ export default function Home() {
     setPhase("setup");
     setResult(null);
     setError(null);
+    setIsSubmitting(false);
   };
 
   const totalMarks = criteria.reduce((s, c) => s + c.maxMarks, 0);
@@ -154,20 +161,29 @@ export default function Home() {
                   id="analyze-evidence-button"
                   type="button"
                   onClick={handleAnalyze}
-                  disabled={!isReady}
+                  disabled={!isReady || isSubmitting}
                   className={`inline-flex items-center gap-2.5 px-6 py-3 rounded-xl text-sm font-semibold transition-all ${
-                    isReady
+                    isReady && !isSubmitting
                       ? "bg-indigo-600 hover:bg-indigo-500 text-white shadow-[0_0_24px_rgba(99,102,241,0.3)]"
                       : "bg-white/5 text-white/25 cursor-not-allowed"
                   }`}
                 >
-                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                    <circle cx="8" cy="8" r="6.5" stroke="currentColor" strokeWidth="1.2" opacity="0.4" />
-                    <circle cx="8" cy="8" r="3.5" stroke="currentColor" strokeWidth="1.2" opacity="0.7" />
-                    <circle cx="8" cy="8" r="1.5" fill="currentColor" />
-                    <path d="M8 1v1.5M8 13.5V15M1 8h1.5M13.5 8H15" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" />
-                  </svg>
-                  Analyze Evidence
+                  {isSubmitting ? (
+                    <>
+                      <div className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin" />
+                      Analyzing Evidence with Gemma 4...
+                    </>
+                  ) : (
+                    <>
+                      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                        <circle cx="8" cy="8" r="6.5" stroke="currentColor" strokeWidth="1.2" opacity="0.4" />
+                        <circle cx="8" cy="8" r="3.5" stroke="currentColor" strokeWidth="1.2" opacity="0.7" />
+                        <circle cx="8" cy="8" r="1.5" fill="currentColor" />
+                        <path d="M8 1v1.5M8 13.5V15M1 8h1.5M13.5 8H15" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" />
+                      </svg>
+                      Analyze Evidence
+                    </>
+                  )}
                 </button>
 
                 <div className="flex flex-col gap-1">
