@@ -84,7 +84,7 @@ export default function EvidenceUploader({
         <input
           ref={inputRef}
           type="file"
-          accept="video/mp4,image/png,image/jpeg,image/jpg"
+          accept="video/mp4,video/webm,image/png,image/jpeg,image/jpg,audio/mp3,audio/wav,audio/mpeg,video/*,audio/*,image/*"
           multiple
           className="hidden"
           onChange={(e) => {

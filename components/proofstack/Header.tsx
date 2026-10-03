@@ -25,10 +25,10 @@ export default function Header() {
         </div>
 
         {/* Badge */}
-        <div className="flex items-center gap-2 bg-indigo-500/10 border border-indigo-500/25 rounded-full px-3 py-1.5 flex-shrink-0">
+        <div className="flex items-center gap-2 bg-indigo-500/10 border border-indigo-500/25 rounded-full px-3 py-1.5 flex-shrink-0" title="Gemini fallback used for unsupported media modalities.">
           <div className="w-1.5 h-1.5 rounded-full bg-indigo-400 shadow-[0_0_6px_#6366f1]" />
           <span className="text-[11px] font-mono font-semibold text-indigo-400">
-            Gemma 4
+            Multimodal Engine
           </span>
         </div>
       </div>

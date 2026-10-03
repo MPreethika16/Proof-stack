@@ -2,8 +2,8 @@ import { GoogleGenAI, createUserContent, createPartFromUri, FileState } from "@g
 import type { Criterion } from "@/types/evaluation";
 import { EvaluationResultSchema } from "@/lib/evaluation-schema";
 
-// Evaluation model: Gemma 4
-const MODEL_ID = "gemma-4-26b-a4b-it";
+// Evaluation model: gemini-3.8-flash (supports video, audio, image modalities)
+const MODEL_ID = "gemini-3.8-flash";
 
 const SYSTEM_INSTRUCTION = `You are an evidence-review assistant for a software project evaluation system.
 
@@ -95,7 +95,7 @@ export async function runGemmaEvaluation(
   const uploadedUris: Array<{ uri: string; mimeType: string; name: string }> = [];
 
   for (const f of files) {
-    if (f.mimeType.startsWith("video/")) {
+    if (f.mimeType.startsWith("video/") || f.mimeType.startsWith("audio/")) {
       const buffer = Buffer.from(f.base64Data, "base64");
       const blob = new Blob([buffer], { type: f.mimeType });
       let uploadedFile = await ai.files.upload({

@@ -99,7 +99,7 @@ export default function Home() {
           {[
             { label: "Rubric", desc: "Define criteria" },
             { label: "Evidence", desc: "Upload proof" },
-            { label: "Gemma", desc: "AI evaluation" },
+            { label: "Evaluation", desc: "AI evidence review" },
             { label: "Human Review", desc: "Final decision" },
           ].map((step, i, arr) => (
             <div key={step.label} className="flex items-center gap-0">
@@ -151,7 +151,7 @@ export default function Home() {
                 <div>
                   <h2 className="text-sm font-semibold text-white">Ready to evaluate?</h2>
                   <p className="text-xs text-white/40 mt-0.5">
-                    Gemma will assess each criterion against your uploaded evidence.
+                    The evaluator will assess each criterion against your uploaded evidence.
                   </p>
                 </div>
               </div>
@@ -171,7 +171,7 @@ export default function Home() {
                   {isSubmitting ? (
                     <>
                       <div className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin" />
-                      Analyzing Evidence with Gemma 4...
+                      Analyzing Evidence...
                     </>
                   ) : (
                     <>
@@ -203,7 +203,7 @@ export default function Home() {
               </div>
 
               <p className="text-[11px] text-white/20 italic border-t border-white/5 pt-4">
-                Gemma provides evidence-grounded recommendations. Final judgment remains with the reviewer.
+                Evidence-grounded recommendations provided. Final judgment remains with the reviewer. (Gemini fallback used for unsupported media modalities.)
               </p>
             </section>
           </div>
