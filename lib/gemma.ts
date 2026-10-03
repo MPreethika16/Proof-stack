@@ -2,8 +2,8 @@ import { GoogleGenAI, createUserContent, createPartFromUri } from "@google/genai
 import type { Criterion } from "@/types/evaluation";
 import { EvaluationResultSchema } from "@/lib/evaluation-schema";
 
-// Evaluation model: gemini-3.8-flash
-const MODEL_ID = "gemini-3.8-flash";
+// Evaluation model: Gemma 4
+const MODEL_ID = "gemma-4-26b-a4b-it";
 
 const SYSTEM_INSTRUCTION = `You are an evidence-review assistant for a software project evaluation system.
 

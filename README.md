@@ -35,7 +35,7 @@ ProofStack provides an AI-assisted, reviewer-first workspace:
 - **Framework**: [Next.js](https://nextjs.org/) (App Router, Turbopack)
 - **Language**: [TypeScript](https://www.typescriptlang.org/) (Strict mode, zero `any`)
 - **Styling**: [Tailwind CSS v4](https://tailwindcss.com/)
-- **AI Engine**: Google Gen AI SDK (`@google/genai`) using `gemini-3.8-flash` / Gemma multimodal capabilities
+- **AI Engine**: Google Gen AI SDK (`@google/genai`) running official **Gemma 4** (`gemma-4-26b-a4b-it`) for multimodal evidence evaluation
 - **Validation**: [Zod](https://zod.dev/) for robust schema validation and JSON parsing
 - **Icons**: Lucide React
 
